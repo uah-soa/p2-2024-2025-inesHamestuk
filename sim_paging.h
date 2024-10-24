@@ -14,10 +14,11 @@ typedef struct
     int frame;          // Frame where it is loaded
     char modified;      // 1 = must be written back to disc
                             // if moved out of the frame
-    // For FIFO 2nd chance
+    
+    // For FIFO 2nd chance, reference bit
     char referenced;    // 1 = page referenced recently
 
-    // For LRU(t)
+    // For LRU(t), for every entry, will be huge 
     unsigned timestamp; // Time mark of last reference
 
     // NOTE: The previous two fiels are in this structure
@@ -25,9 +26,11 @@ typedef struct
     //       a mechanism that, in reality, would be
     //       supported by the hardware.
 }
+//page map table 
 spage;
 
-// Structure that holds the state of a frame
+// Structure that holds the state of a frame, list of frames, needed in FIFO 2nd chance
+// tracks what frames are available, linked list 
 // (the hardware doesn't know anything about this struct)
 
 typedef struct
@@ -40,12 +43,13 @@ typedef struct
 sframe;
 
 // Struture that contains the state of the whole system
-
+//
 typedef struct
 {
     // Page table (maintained by HW and OS)
     int pagsz;
     int numpags;
+    //access to page map table, kept by OS in proccess control block 
     spage * pgt;
     int lru;               // Only for LRU replacement
     unsigned clock;        // Only for LRU(t) replacement
@@ -59,7 +63,7 @@ typedef struct
     // Trace data
     int numrefsread;       // Counter of read operations
     int numrefswrite;      // Counter of write operations
-    int numpagefaults;     // Counter of page faults
+    int numpagefaults;     // Counter of page faults IMPORTANT
     int numpgwriteback;    // Counter of write back (to disc) ops.
     int numillegalrefs;    // References out of range
     char detailed;         // 1 = show step-by-step information
