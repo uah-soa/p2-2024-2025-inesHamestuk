@@ -10,7 +10,8 @@
 
 typedef struct
 {
-    char present;       // 1 = loaded in a frame
+//here one byte each -> more realistic one bit each
+    char present;       // 1 = loaded in a frame (physical mem)
     int frame;          // Frame where it is loaded
     char modified;      // 1 = must be written back to disc
                             // if moved out of the frame

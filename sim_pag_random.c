@@ -46,7 +46,31 @@ unsigned sim_mmu(ssystem* S, unsigned virtual_addr, char op) {
   // TODO(student):
   //       Type in the code that simulates the MMU's (hardware)
   //       behaviour in response to a memory access operation
+  page = virtual_addr / S -> pagsz; // Quotient gives the page num
+  offset = virtual_addr % S -> pagsz; // Remainder, gives offset
 
+  // check if access to address is legal 
+  if( page < 0 || page >= S -> numpags)
+  {
+        S -> numillegalrefs++; 
+        return ~0U;
+  }
+  //if page not present in physical memory, trigger page fault
+  if(! S->pgt[page].present )
+  {
+    handle_page_fault(S, virtual_addr);
+  }
+
+  // translate virtual into physical 
+  frame = S->pgt[page].frame;
+  physical_address = frame*S->pagesz+offset;
+
+  //mark page as referenced 
+  reference_page(S, page, op); 
+
+  //display memory access info on screen if in D mode (detailed)
+  if(S->detailed){
+        printf("\t %c %u==P %d(M  %d)+ %d\n", op, virtual_addr, page, frame, offset);
   return physical_addr;
 }
 
